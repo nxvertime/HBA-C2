@@ -17,18 +17,18 @@ The final goal is to create a fully functional **C2 system** that can also serve
 
 | Feature                               | Description                                                                                        | Status      |
 |---------------------------------------|----------------------------------------------------------------------------------------------------|-------------|
-| 🔒 **HTTPS Communication**            | Secure communication channel to limit AV/EDR detection.                                            | ❌ Not Implemented |
-| 🌐 **Disposable Interface C2**        | A "throwaway" server, easy to deploy, to protect the main C2 infrastructure.                      | ❌ Not Implemented |
-| 🛡️ **Anti-Sandboxing**                | Techniques to detect and bypass sandboxed environments.                                           | ❌ Not Implemented |
-| 🧩 **Shellcode Injection**            | Multiple methods of injecting shellcode into processes.                                           | ❌ Not Implemented |
-| 🐚 **Remote Shell**                   | Execute commands remotely with a simple and responsive interface.                                | ❌ Not Implemented |
-| ♾️ **Persistence Mechanisms**         | Registry keys, startup programs scanning, DLL hijacking, and sideloading.                        | ❌ Not Implemented |
-| 🔄 **Process Pivoting**               | Multiple techniques to pivot from one process to another.                                        | ❌ Not Implemented |
-| 💥 **DDoS Capabilities**              | Different methods to perform Distributed Denial of Service attacks.                              | ❌ Not Implemented |
-| 🛠️ **Local Privilege Escalation**     | Search for vulnerable drivers and exploit them for privilege escalation.                         | ❌ Not Implemented |
-| ⛏️ **Cryptominer**                    | Optional feature for mining cryptocurrency on remote systems.                                    | ❌ Not Implemented |
-| 🔑 **Credential Stealer**             | Extract credentials such as passwords, tokens, and other sensitive information.                  | ❌ Not Implemented |
-| 🎹 **Keylogger**                      | Log keystrokes to capture input from the user.                                                   | ❌ Not Implemented |
+| 🔒 **HTTPS Communication**            | Secure communication channel to limit AV/EDR detection.                                            | ✔️ |
+| 🌐 **Disposable Interface C2**        | A "throwaway" server, easy to deploy, to protect the main C2 infrastructure.                      | ❌ |
+| 🛡️ **Anti-Sandboxing**                | Techniques to detect and bypass sandboxed environments.                                           | ❌  |
+| 🧩 **Shellcode Injection**            | Multiple methods of injecting shellcode into processes.                                           | ❌  |
+| 🐚 **Remote Shell**                   | Execute commands remotely with a simple and responsive interface.                                | ❌  |
+| ♾️ **Persistence Mechanisms**         | Registry keys, startup programs scanning, DLL hijacking, and sideloading.                        | ❌  |
+| 🔄 **Process Pivoting**               | Multiple techniques to pivot from one process to another.                                        | ❌  |
+| 💥 **DDoS Capabilities**              | Different methods to perform Distributed Denial of Service attacks.                              | ❌  |
+| 🛠️ **Local Privilege Escalation**     | Search for vulnerable drivers and exploit them for privilege escalation.                         | ❌  |
+| ⛏️ **Cryptominer**                    | Optional feature for mining cryptocurrency on remote systems.                                    | ❌  |
+| 🔑 **Credential Stealer**             | Extract credentials such as passwords, tokens, and other sensitive information.                  | ❌  |
+| 🎹 **Keylogger**                      | Log keystrokes to capture input from the user.                                                   | ❌  |
 
 ---
 
