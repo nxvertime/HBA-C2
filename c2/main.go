@@ -21,6 +21,18 @@ type ResGetSID struct {
 	WelcomeMsg string `json:"welcomeMsg"`
 }
 
+type ResHeartBeat struct {
+	Type string                 `json:"type"`
+	Args map[string]interface{} `json:"args"`
+}
+
+// /////////// REQUESTS
+type ReqHeartBeat struct {
+	Type    string `json:"type"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 // //////// COMMANDS
 type Command struct {
 	Name        string
