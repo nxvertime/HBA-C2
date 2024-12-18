@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,16 +21,122 @@ type ResGetSID struct {
 	WelcomeMsg string `json:"welcomeMsg"`
 }
 
+// //////// COMMANDS
+type Command struct {
+	Name        string
+	Args        []string
+	NoMaxArgs   bool
+	Description string
+}
+
+// //////// LISTS ///////////////
+// //// AVAILABLE COMMANDS
+var commands = []Command{}
+
 // //////////// WEB SERVER CONF ////////////
 const PORT = ":443"
 
 // ///////////  LOGS / CONSOLE MANAGEMENT ////////////////
 var l = log.New(os.Stdout, "", 0)
+var reader = bufio.NewReader(os.Stdin)
 var customPrefix = "[LOG]"
+var inputPrefix = "# "
+
+func NewCommand(name string, args []string, noMaxArgs bool, description string) Command {
+	if !noMaxArgs {
+		noMaxArgs = true
+	}
+	return Command{name, args, noMaxArgs, description}
+}
+func InitCommands() {
+	commands = append(commands, NewCommand("help", []string{}, false, "Show help"))
+	commands = append(commands, NewCommand("version", []string{}, false, "Show version"))
+	commands = append(commands, NewCommand("show", []string{"sessions / sessiond_id"}, false, "Show session list"))
+	commands = append(commands, NewCommand("exec", []string{"session_id", "Args"}, true, "Execute a command on a specified session"))
+	commands = append(commands, NewCommand("shell", []string{"session_id"}, false, "Start a remote shell session on a specified session"))
+
+}
+
+func Help() {
+	fmt.Println("---- HELP ----")
+	for i := 0; i < len(commands); i++ {
+		fmt.Println("Usage:")
+		fmt.Print("  " + commands[i].Name)
+		for a := 0; a < len(commands[i].Args); a++ {
+			fmt.Print(" ")
+			fmt.Print(commands[i].Args[a])
+		}
+		fmt.Print("\n")
+		fmt.Println("Description: ")
+		fmt.Println("  " + commands[i].Description)
+
+	}
+
+}
 
 func Log(l *log.Logger, msg string) {
-	l.SetPrefix(time.Now().Format("2006-01-02 15:04:05") + (" " + customPrefix + " "))
+	l.SetPrefix("\033[2K\r" + time.Now().Format("2006-01-02 15:04:05") + (" " + customPrefix + " "))
 	l.Print(msg)
+	fmt.Print(inputPrefix)
+}
+
+func Error(l *log.Logger, msg string) {
+	l.SetPrefix("\033[2K\r" + time.Now().Format("2006-01-02 15:04:05") + (" " + "[ERROR]" + " "))
+	l.Print(msg)
+
+}
+
+func UserInput(r *bufio.Reader) {
+	for {
+		fmt.Print(inputPrefix)
+		input, err := r.ReadString('\n')
+		if err != nil {
+			log.Fatal(err)
+		}
+		input = strings.TrimSpace(input)
+
+		Interpreter(l, input)
+	}
+}
+
+func Interpreter(l *log.Logger, input string) {
+	if input == "" {
+		return
+	}
+	splittedInput := strings.Split(input, " ")
+
+	cmdName := splittedInput[0]
+
+	command := NewCommand("", []string{""}, false, "")
+	for i := 0; i < len(commands); i++ {
+
+		if (commands[i].Name) == cmdName {
+
+			command = commands[i]
+		}
+
+	}
+	if command.Name == "" {
+		Error(l, "Command not found, type help")
+		return
+	}
+
+	if !(len(command.Args) == (len(splittedInput) - 1)) {
+
+		Error(l, "Invalid number of arguments given, "+strconv.Itoa(len(command.Args))+" expected")
+		Log(l, "Usage: ")
+		Log(l, "  "+command.Name+" "+strings.Join(command.Args, " "))
+
+		fmt.Print("\n")
+		return
+	}
+
+	switch command.Name {
+	case "help":
+		Help()
+
+	}
+
 }
 
 // /////// OTHER THINGS ///////////
@@ -64,8 +174,13 @@ func GetSID(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(jsonData))
 }
 
-func main() {
+func HeartBeat(w http.ResponseWriter, req *http.Request) {
 
+}
+
+func main() {
+	InitCommands()
+	go UserInput(reader)
 	http.HandleFunc("/helloworld", HelloWorld)
 	http.HandleFunc("/getSID", GetSID)
 	Log(l, "Starting the webserver on "+PORT)
