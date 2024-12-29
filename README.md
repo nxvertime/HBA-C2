@@ -1,4 +1,6 @@
 # **HBA C2** 🚀
+![giphy](https://github.com/user-attachments/assets/44fb794d-8839-4c20-b013-2aaba7c7da62)
+
 
 **Disclaimer**: This project is created **for educational purposes only**. Its main goal is to learn how advanced C2 (Command & Control) systems work, understand remote administration, and explore bypassing AV/EDR solutions. Please use this responsibly and ethically.
 
