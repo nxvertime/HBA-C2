@@ -3,10 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
-
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 )
 
+// TODO: put this as env vars to avoid leaks (i dont know how to manage it now)
+// NOTE: its some random password / usrname, to use in a dev env only, not production !!!
 const DB_HOST = "localhost"
 const DB_PORT = 3306
 const DB_NAME = "hba_db"
@@ -28,4 +30,23 @@ func InitDb() (*sql.DB, error) {
 
 	return db, nil
 
+}
+
+func ZAvailability(sessionId string, db *sql.DB) bool {
+
+	query := "SELECT SessionId FROM zombies WHERE SessionId = ?"
+
+	var retrievedSessionId string
+	err := db.QueryRow(query, sessionId).Scan(&retrievedSessionId)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			DbgMsgEx(l, "[ZAVLBLT] Zombie not found", true)
+			return false
+		}
+
+		log.Fatal(err)
+	}
+	DbgMsgEx(l, "[ZAVLBLT] Zombie found", true)
+	return true
 }

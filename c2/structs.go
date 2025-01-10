@@ -15,6 +15,10 @@ type ResHeartBeat struct {
 	Args map[string]interface{} `json:"args"`
 }
 
+type ResRegister struct {
+	ResMsg string `json:"resMsg"`
+}
+
 // /////////// REQUESTS
 type ReqRegister struct {
 	SessionId string `json:"sessionId"`
@@ -28,11 +32,16 @@ type ReqHeartBeat struct {
 }
 
 // //////// COMMANDS
-type Command struct {
+type InputCommand struct {
 	Name        string
 	Args        []string
 	NoMaxArgs   bool
 	Description string
+}
+
+type Command struct {
+	Type string
+	Args []string
 }
 
 // /////////// ZOMBIES

