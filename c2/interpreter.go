@@ -32,19 +32,24 @@ func InitCommands() {
 }
 
 func Help() {
-	fmt.Println("---- HELP ----")
+	UILog(textView, "---- HELP ----")
 	for i := 0; i < len(commands); i++ {
-		fmt.Println("> " + commands[i].Name)
-		fmt.Println("Usage:")
-		fmt.Print("  " + commands[i].Name)
+		UILog(textView, "")
+		UILog(textView, "> "+commands[i].Name)
+		UILog(textView, "Usage:")
+		UILogEx(textView, "  "+commands[i].Name, false)
 		for a := 0; a < len(commands[i].Args); a++ {
-			fmt.Print(" ")
-			fmt.Print(commands[i].Args[a])
+			UILogEx(textView, " ", false)
+			UILogEx(textView, commands[i].Args[a], false)
+
 		}
-		fmt.Print("\n")
-		fmt.Println("Description: ")
-		fmt.Println("  " + commands[i].Description)
-		fmt.Println("")
+		UILog(textView, "")
+
+		UILog(textView, "Description: ")
+		UILog(textView, "  "+commands[i].Description)
+
+		UILog(textView, "")
+
 	}
 
 }
@@ -77,10 +82,10 @@ func UserInput(r *bufio.Reader, db *sql.DB) {
 
 func ChangeVerbosity(state string) {
 	state = strings.ToLower(state)
-	if state == "1" {
+	if state == "enable" {
 		*verbose = true
 		LogEx(l, "[VERBOSITY] Verbosity enabled", true)
-	} else if state == "0" {
+	} else if state == "disable" {
 		*verbose = false
 		LogEx(l, "[VERBOSITY] Verbosity disabled", true)
 
