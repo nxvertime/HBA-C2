@@ -41,12 +41,12 @@ func ZAvailability(sessionId string, db *sql.DB) bool {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			DbgMsgEx(l, "[ZAVLBLT] Zombie not found", true)
+			DbgMsgEx("[ZAVLBLT] Zombie not found", true)
 			return false
 		}
 
 		log.Fatal(err)
 	}
-	DbgMsgEx(l, "[ZAVLBLT] Zombie found", true)
+	DbgMsgEx("[ZAVLBLT] Zombie found", true)
 	return true
 }

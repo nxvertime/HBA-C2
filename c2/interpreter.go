@@ -63,7 +63,7 @@ func ExecCmd(sid string, args []string, db *sql.DB) {
 		Args: argsMap,
 	}
 	queueMutex.Unlock()
-	LogEx(l, "InputCommand Queue: "+"SID: "+sid+" Type: "+commandQueue[sid].Type+" Arguments: "+strings.Join(args, " "), true)
+	LogEx("InputCommand Queue: "+"SID: "+sid+" Type: "+commandQueue[sid].Type+" Arguments: "+strings.Join(args, " "), true)
 }
 
 // TODO: find another way to interact with db cuz thats weird, nah?
@@ -76,7 +76,7 @@ func UserInput(r *bufio.Reader, db *sql.DB) {
 		}
 		input = strings.TrimSpace(input)
 
-		Interpreter(l, input, db)
+		Interpreter(input, db)
 	}
 }
 
@@ -84,15 +84,15 @@ func ChangeVerbosity(state string) {
 	state = strings.ToLower(state)
 	if state == "enable" {
 		*verbose = true
-		LogEx(l, "[VERBOSITY] Verbosity enabled", true)
+		LogEx("[VERBOSITY] Verbosity enabled", true)
 	} else if state == "disable" {
 		*verbose = false
-		LogEx(l, "[VERBOSITY] Verbosity disabled", true)
+		LogEx("[VERBOSITY] Verbosity disabled", true)
 
 	}
 }
 
-func Interpreter(l *log.Logger, input string, db *sql.DB) {
+func Interpreter(input string, db *sql.DB) {
 	if input == "" {
 		return
 	}
@@ -110,15 +110,15 @@ func Interpreter(l *log.Logger, input string, db *sql.DB) {
 
 	}
 	if command.Name == "" {
-		Error(l, "InputCommand not found, type help")
+		Error("InputCommand not found, type help")
 		return
 	}
 
 	if !(len(command.Args) == (len(splittedInput) - 1)) && command.NoMaxArgs == false {
 
-		Error(l, "Invalid number of arguments given, "+strconv.Itoa(len(command.Args))+" expected")
-		Log(l, "Usage: ")
-		Log(l, "  "+command.Name+" "+strings.Join(command.Args, " "))
+		Error("Invalid number of arguments given, " + strconv.Itoa(len(command.Args)) + " expected")
+		Log("Usage: ")
+		Log("  " + command.Name + " " + strings.Join(command.Args, " "))
 
 		fmt.Print("\n")
 		return

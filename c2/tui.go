@@ -52,7 +52,7 @@ func StartUI(db *sql.DB) {
 			UILog(textView, inputPrefix+text)
 
 			inputField.SetText("")
-			Interpreter(l, text, db)
+			Interpreter(text, db)
 		}
 
 	}).SetBorder(true)
