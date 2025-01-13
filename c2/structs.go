@@ -46,6 +46,7 @@ type Command struct {
 
 // /////////// ZOMBIES
 type Zombie struct {
+	Id            int
 	SessionId     string
 	RemoteAddr    string
 	RemotePort    string

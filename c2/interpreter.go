@@ -28,7 +28,7 @@ func InitCommands() {
 	commands = append(commands, NewCommand("exec", []string{"session_id", "args"}, true, "Execute a command on a specified session"))
 	commands = append(commands, NewCommand("shell", []string{"session_id"}, false, "Start a remote shell session on a specified session"))
 	commands = append(commands, NewCommand("verbosity", []string{"enable / disable"}, false, "Enable / disable program's verbosity"))
-
+	commands = append(commands, NewCommand("show", []string{"object_type (zombies / interfaces / tasks)"}, false, "Show an object's properties"))
 }
 
 func Help() {
@@ -52,6 +52,54 @@ func Help() {
 
 	}
 
+}
+
+func Show(object_type string, db *sql.DB) {
+	switch object_type {
+	case "zombies":
+		//sql req
+
+		query := "SELECT id, SessionId, RemoteAddr, RemotePort, UserName, Country FROM zombies"
+		rows, err := db.Query(query)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		var zombies []Zombie
+
+		for rows.Next() {
+			var z Zombie
+
+			if err := rows.Scan(
+				&z.Id,
+				&z.SessionId,
+				&z.RemoteAddr,
+				&z.RemotePort,
+				&z.UserName,
+				&z.Country,
+			); err != nil {
+				log.Fatal(err)
+			}
+			zombies = append(zombies, z)
+		}
+
+		if err := rows.Err(); err != nil {
+			log.Fatal(err)
+		}
+
+		for _, zombie := range zombies {
+			// TODO : display it with tview.NewTable
+			fmt.Fprintf(textView, "ID: %d, SessionId: %s, RemoteAddr: %s, RemotePort: %s, UserName: %s, Country: %s\n",
+				zombie.Id, zombie.SessionId, zombie.RemoteAddr, zombie.RemotePort, zombie.UserName, zombie.Country)
+		}
+
+		//DO REQUEST + DISPLAY TABLE
+		break
+	case "tasks":
+		//DO REQUEST + DISPLAY TABLE
+		break
+	}
 }
 
 func ExecCmd(sid string, args []string, db *sql.DB) {
@@ -138,6 +186,10 @@ func Interpreter(input string, db *sql.DB) {
 		state := splittedInput[1]
 
 		ChangeVerbosity(state)
+
+	case "show":
+		obj_type := splittedInput[1]
+		Show(obj_type, db)
 	}
 
 }
