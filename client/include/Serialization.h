@@ -28,7 +28,7 @@ struct ResRegister {
 
 struct ResHeartBeat {
     std::string Type;
-    std::unordered_map<std::string, std::string> Args;
+    std::vector<std::string> Args;
 };
 
 

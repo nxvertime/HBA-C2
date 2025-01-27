@@ -35,7 +35,6 @@ func checkZombiesAvailability(db *sql.DB) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer rows.Close()
 
 		for rows.Next() {
 
@@ -64,15 +63,15 @@ func checkZombiesAvailability(db *sql.DB) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				defer rows1.Close()
-
+				
+				rows1.Close()
 			}
 		}
 
 		if err := rows.Err(); err != nil {
 			Error(logPrefix + "Error while iterating rows")
 		}
-
+		rows.Close()
 		DbgMsgEx(logPrefix+strconv.Itoa(removedClientNbr)+" zombies deleted", true)
 		time.Sleep(CHECKING_DELAY * time.Second)
 	}

@@ -9,6 +9,11 @@ using namespace std;
 
 
 
+
+
+
+
+
 string getHeartBeat(httplib::Client& client, string sessionId) {
 
 
@@ -41,6 +46,23 @@ string getHeartBeat(httplib::Client& client, string sessionId) {
 
 int interpreter(string deserialisedJsonObj) {
     cout << "[INTERPRETER] ==> " << deserialisedJsonObj << endl;
+
+    nlohmann::json cmdJsonObj = nlohmann::json::parse(deserialisedJsonObj);
+    
+    ResHeartBeat serializedCmd = cmdJsonObj.get<ResHeartBeat>();
+    
+    cout << "[INTERPRETER] ==> De-serialised command: type: " << serializedCmd.Type << endl;
+    
+    for (const auto& arg : serializedCmd.Args) {
+        cout << "-> " << arg << endl;
+        
+    }
+
+    if (serializedCmd.Type == "exec") {
+
+    }
+
+
     return 0;
 }
 
@@ -103,6 +125,9 @@ int main()
 
     nlohmann::json resRegjsonObj = nlohmann::json::parse(regResBody);
     ResRegister resRegister = resRegjsonObj.get<ResRegister>();
+
+    
+
 
     if (resRegister.resMsg == "OK") {
         cout << "Succesfully registered Yiiipiee" << endl;

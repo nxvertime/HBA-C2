@@ -85,7 +85,7 @@ func Register(db sql.DB) http.HandlerFunc {
 	}
 }
 
-func HeartBeat(db sql.DB) http.HandlerFunc {
+func HeartBeat(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		logPrefix := "[HEARTBEAT] "
 
@@ -110,8 +110,15 @@ func HeartBeat(db sql.DB) http.HandlerFunc {
 		if err1 != nil {
 			DbgMsgEx((logPrefix + "Error updating row: " + err1.Error()), true)
 		}
-		resHB := ResHeartBeat{"empty", make(map[string]interface{})}
-		resBody, err := json.Marshal(resHB)
+
+		Log(logPrefix + "Searching for commands to send...")
+		response := GetCmdFromQueue(reqHB.SessionId, db)
+		if response.Type == "" {
+			DbgMsgEx(logPrefix+"Error no command to send", true)
+		}
+		//resHB := ResHeartBeat{reqHB.SessionId, "empty", []interface{}{}}
+
+		resBody, err := json.Marshal(response)
 		if err != nil {
 			DbgMsgEx((logPrefix + "Error parsing response body: " + err.Error()), true)
 			w.WriteHeader(http.StatusInternalServerError)

@@ -44,7 +44,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="client.cpp" />
     <ClCompile Include="include\openssl\applink.c" />
+    <ClCompile Include="src\Exec.cpp" />
     <ClCompile Include="src\Serialization.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -285,6 +286,7 @@
     <ClInclude Include="include\openssl\__DECC_INCLUDE_EPILOGUE.H" />
     <ClInclude Include="include\openssl\__DECC_INCLUDE_PROLOGUE.H" />
     <ClInclude Include="include\Serialization.h" />
+    <ClInclude Include="include\Commands.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lib\MDd\libcrypto.def" />

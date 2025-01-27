@@ -11,8 +11,9 @@ type ResGetSID struct {
 }
 
 type ResHeartBeat struct {
-	Type string                 `json:"type"`
-	Args map[string]interface{} `json:"args"`
+	SessionId string        `json:"sessionId"`
+	Type      string        `json:"type"`
+	Args      []interface{} `json:"args"`
 }
 
 type ResRegister struct {

