@@ -3,8 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <Windows.h>
 
-int ExecCommand(std::string command);
-int ExecCommandFromList(std::vector<std::string>);
+#include <iostream>
+#include <cstdio>
+#include <memory>
 
+#include <array>
+
+std::string execCommandFromList(std::vector<std::string>);
+std::string execCommand(const std::string& command);
 #endif
