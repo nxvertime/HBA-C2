@@ -87,7 +87,7 @@ int interpreter(httplib::Client& client,string sessionId,  string deserialisedJs
 
     if (serializedCmd.Type == "exec") {
         std::string result = execCommandFromList(serializedCmd.Args);
-        sendResponse(client, sessionId, "response", "OK", result);
+        sendResponse(client, sessionId, "exec", "OK", result);
     }
 
 

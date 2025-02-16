@@ -21,6 +21,7 @@ func LogEx(msg string, displayInputPrefix bool) {
 
 	//}
 
+	//fmt.Println(time.Now().Format("2006-01-02 15:04:05") + (" " + "[LOG]" + " ") + msg)
 	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[LOG]"+" ")+msg)
 }
 
@@ -37,6 +38,8 @@ func DbgMsgEx(msg string, displayInputPrefix bool) {
 	//	fmt.Print(inputPrefix)
 
 	//}
+
+	//fmt.Println(time.Now().Format("2006-01-02 15:04:05") + (" " + "[DBG]" + " ") + msg)
 	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[DBG]"+" ")+msg)
 
 }
@@ -48,6 +51,8 @@ func DbgMsg(msg string) {
 func Error(msg string) {
 	//l.SetPrefix(time.Now().Format("2006-01-02 15:04:05") + (" " + "[ERROR]" + " "))
 	//l.Print(msg)
+
+	//fmt.Println(time.Now().Format("2006-01-02 15:04:05") + (" " + "[ERR]" + " ") + msg)
 	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[ERROR]"+" ")+msg)
 
 }

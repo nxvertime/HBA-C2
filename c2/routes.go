@@ -111,6 +111,14 @@ func HeartBeat(db *sql.DB) http.HandlerFunc {
 			DbgMsgEx((logPrefix + "Error updating row: " + err1.Error()), true)
 		}
 
+		///// CHECK IF IT'S A RESPONSE
+		if reqHB.Type == "exec" && reqHB.Status == "OK" {
+			UILog(textView, reqHB.Message)
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+		}
+
+		////// SEARCHING FOR COMMANDS
 		Log(logPrefix + "Searching for commands to send...")
 		response := GetCmdFromQueue(reqHB.SessionId, db)
 		if response.Type == "" {

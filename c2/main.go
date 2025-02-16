@@ -63,7 +63,7 @@ func checkZombiesAvailability(db *sql.DB) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				
+
 				rows1.Close()
 			}
 		}
@@ -81,6 +81,9 @@ func checkZombiesAvailability(db *sql.DB) {
 var verbose *bool
 
 func main() {
+
+	/*extractShellCode("client.exe")*/
+
 	verbose = flag.Bool("v", false, "Enable verbosity")
 	flag.BoolVar(verbose, "verbose", false, "Enable verbosity")
 	flag.Parse()
@@ -104,5 +107,7 @@ func main() {
 		go StartWebServer(db)
 	}()
 	StartUI(db)
+
+	//StartWebServer(db)
 
 }
