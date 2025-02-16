@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"strconv"
 	"sync"
@@ -89,7 +90,8 @@ func main() {
 	flag.Parse()
 	db, dBerr := InitDb()
 	if dBerr != nil {
-		Error("Error while starting DB: " + dBerr.Error())
+		fmt.Println("Error while starting DB: " + dBerr.Error())
+
 	}
 
 	defer db.Close()
