@@ -33,6 +33,17 @@ The final goal is to create a fully functional **C2 system** that can also serve
 
 ---
 
+## **Installation** 📥
+
+```
+git clone https://wwwgithub.
+```
+git clone https://github.com/nxvertime/HBA-C2
+cd HBA-C2
+chmod +x install.sh
+./install.sh
+---
+
 ## **Motivation** 🎯
 
 The main purpose of this project is to:
