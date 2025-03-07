@@ -55,6 +55,11 @@ cd HBA-C2
 chmod +x install.sh
 ./install.sh
 ```
+You can now start the server with:
+```
+go run c2
+```
+
 ---
 
 ## **Motivation** 🎯
