@@ -35,9 +35,22 @@ The final goal is to create a fully functional **C2 system** that can also serve
 
 ## **Installation** 📥
 
+To install **HBA-C2** type the following commands:
 
+Clone the repo:
 ```
 git clone https://github.com/nxvertime/HBA-C2
+```
+
+If you already have mysql installed, you can custom the importation by editing these variables:
+- ```$MYSQL_USER``` default value: root
+- ```$MYSQL_PASS``` default value: empty
+- ```$MYSQL_HOST``` default value: localhost
+- ```$MYSQL_PORT``` default value: 3306
+- ```$MYSQL_FILE``` default value: hba_db.sql
+
+Then run the installation script:
+```
 cd HBA-C2
 chmod +x install.sh
 ./install.sh
