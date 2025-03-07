@@ -72,7 +72,7 @@ func GetCmdFromQueue(sid string, db *sql.DB) ResHeartBeat {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Println("Aucune donnée trouvée dans la table.")
+			Log("[+CMD2Q] No command to send found, skipping...")
 			return ResHeartBeat{"", "", []interface{}{}}
 		}
 		log.Fatal(err)

@@ -16,7 +16,11 @@ sudo apt install -y golang-go
 echo "[$] Installing OpenSSL"
 sudo apt install -y openssl
 
+echo "[$] Installing Mingw"
+sudo apt install -y mingw-w64
 
+echo "[$] Installing lib-ssl for Mingw"
+sudo apt install libssl-dev mingw-w64
 
 MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_PASS="${MYSQL_PASS:-}"
