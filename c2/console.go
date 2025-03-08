@@ -14,7 +14,7 @@ var customPrefix = "[DEBUG]"
 var inputPrefix = "==> "
 
 func LogEx(msg string, displayInputPrefix bool) {
-	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[lightgreen::b]LOG[-::-]"+" ")+(msg))
+	" " + "[blue::b]LOG[-::-]"
 }
 
 func Log(msg string) {
