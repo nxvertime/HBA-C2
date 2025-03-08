@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"github.com/rivo/tview"
 	"log"
 	"os"
 	"time"
@@ -13,16 +14,7 @@ var customPrefix = "[DEBUG]"
 var inputPrefix = "==> "
 
 func LogEx(msg string, displayInputPrefix bool) {
-
-	//l.SetPrefix("\033[2K\r" + time.Now().Format("2006-01-02 15:04:05") + (" " + "[LOG]" + " "))
-	//l.Print(msg)
-	//if displayInputPrefix {
-	//	fmt.Print(inputPrefix)
-
-	//}
-
-	//fmt.Println(time.Now().Format("2006-01-02 15:04:05") + (" " + "[LOG]" + " ") + msg)
-	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[LOG]"+" ")+msg)
+	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[lightgreen::b]LOG[-::-]"+" ")+(msg))
 }
 
 func Log(msg string) {
@@ -32,16 +24,7 @@ func DbgMsgEx(msg string, displayInputPrefix bool) {
 	if !*verbose {
 		return
 	}
-	//l.SetPrefix("\033[2K\r" + time.Now().Format("2006-01-02 15:04:05") + (" " + "[DBG]" + " "))
-	//l.Print(msg)
-	//if displayInputPrefix {
-	//	fmt.Print(inputPrefix)
-
-	//}
-
-	//fmt.Println(time.Now().Format("2006-01-02 15:04:05") + (" " + "[DBG]" + " ") + msg)
-	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[DBG]"+" ")+msg)
-
+	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[darkcyan::b]DBG[-::-]"+" ")+(msg))
 }
 
 func DbgMsg(msg string) {
@@ -49,10 +32,5 @@ func DbgMsg(msg string) {
 }
 
 func Error(msg string) {
-	//l.SetPrefix(time.Now().Format("2006-01-02 15:04:05") + (" " + "[ERROR]" + " "))
-	//l.Print(msg)
-
-	//fmt.Println(time.Now().Format("2006-01-02 15:04:05") + (" " + "[ERR]" + " ") + msg)
-	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[ERROR]"+" ")+msg)
-
+	UILog(textView, time.Now().Format("2006-01-02 15:04:05")+(" "+"[red::b]ERROR[-::-]"+" ")+tview.Escape(msg))
 }

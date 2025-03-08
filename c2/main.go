@@ -25,7 +25,7 @@ const MAX_AVAILABILITY_TIME = 60 //in sec
 const CHECKING_DELAY = 10        // in sec
 
 func checkZombiesAvailability(db *sql.DB) {
-	logPrefix := "[ZMBICHECK] "
+	logPrefix := "[green::b]ZMBICHECK[-::-] "
 	for {
 		removedClientNbr := 0
 		DbgMsgEx(logPrefix+"Checking Zombies Availability", true)
@@ -99,7 +99,7 @@ func main() {
 	go func() {
 
 		if *verbose {
-			Log("[ARGS] Verbosity enabled")
+			Log("[blue::b]ARGS[-::-] Verbosity enabled")
 		}
 
 		InitCommands()

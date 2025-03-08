@@ -40,7 +40,7 @@ func IdToSid(id int, db *sql.DB) string {
 	err := db.QueryRow(query, id).Scan(&sid)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			Error("[ID2SID] The specified ID does not exist")
+			Error("[[ID2SID]] The specified ID does not exist")
 		} else {
 			log.Fatal(err)
 		}
@@ -61,7 +61,7 @@ func AddToCmdQueue(sid string, cmd_type string, args []string, db *sql.DB) {
 		log.Fatalf("Error while inserting data : %v", err)
 
 	}
-	Log("[+CMD2Q] Command succesfully added to queue !")
+	Log("[[+CMD2Q]] Command succesfully added to queue !")
 }
 
 func GetCmdFromQueue(sid string, db *sql.DB) ResHeartBeat {
@@ -72,7 +72,7 @@ func GetCmdFromQueue(sid string, db *sql.DB) ResHeartBeat {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			Log("[+CMD2Q] No command to send found, skipping...")
+			Log("[[+CMD2Q]] No command to send found, skipping...")
 			return ResHeartBeat{"", "", []interface{}{}}
 		}
 		log.Fatal(err)
@@ -86,7 +86,7 @@ func GetCmdFromQueue(sid string, db *sql.DB) ResHeartBeat {
 	_, err1 := db.Query(query, sid)
 	if err1 != nil {
 		log.Fatal(err)
-		
+
 	}
 	return firstRes
 }
@@ -99,12 +99,12 @@ func ZAvailability(sessionId string, db *sql.DB) bool {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			DbgMsgEx("[ZAVLBLT] Zombie not found", true)
+			DbgMsgEx("[[ZAVLBLT]] Zombie not found", true)
 			return false
 		}
 
 		log.Fatal(err)
 	}
-	DbgMsgEx("[ZAVLBLT] Zombie found", true)
+	DbgMsgEx("[[ZAVLBLT]] Zombie found", true)
 	return true
 }

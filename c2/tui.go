@@ -18,12 +18,12 @@ func UILog(txtv *tview.TextView, msg string) {
 }
 
 func UILogEx(txtv *tview.TextView, msg string, new_line bool) {
-	escapedMsg := tview.Escape(msg)
+	//escapedMsg := tview.Escape(msg)
 	if new_line {
-		fmt.Fprintf(txtv, "%s\n", escapedMsg)
+		fmt.Fprintf(txtv, "%s\n", msg)
 
 	} else {
-		fmt.Fprintf(txtv, "%s", escapedMsg)
+		fmt.Fprintf(txtv, "%s", msg)
 
 	}
 	textView.ScrollToEnd()

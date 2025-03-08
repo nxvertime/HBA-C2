@@ -149,10 +149,10 @@ func ChangeVerbosity(state string) {
 	state = strings.ToLower(state)
 	if state == "enable" {
 		*verbose = true
-		LogEx("[VERBOSITY] Verbosity enabled", true)
+		LogEx("[[VERBOSITY]] Verbosity enabled", true)
 	} else if state == "disable" {
 		*verbose = false
-		LogEx("[VERBOSITY] Verbosity disabled", true)
+		LogEx("[[VERBOSITY]] Verbosity disabled", true)
 
 	}
 }
