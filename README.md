@@ -51,13 +51,35 @@ If you already have mysql installed, you can custom the importation by editing t
 
 Then run the installation script:
 ```
-cd HBA-C2
+cd HBA-C2/c2
 chmod +x install.sh
 ./install.sh
 ```
 You can now start the server with:
 ```
 go run c2
+```
+
+---
+
+## **How to use**
+## 🎯 Create your first payload
+
+1. Move to the build directory
+```sh
+cd builder
+```
+2. Create your payload
+```sh
+go build hba_build.go
+./hba_build -h
+```
+3. Launch the C2
+```sh
+cd ../c2 
+go build c2
+./c2
+
 ```
 
 ---
