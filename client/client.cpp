@@ -10,6 +10,8 @@ using namespace std;
 
 
 
+const std::string HOST = "{HOST_PLACEHOLDER}";
+const int PORT = {PORT_PLACEHOLDER};
 
 
 
@@ -103,7 +105,7 @@ int main()
     
     
     std::cout << "Hello World!\n";
-    httplib::Client cli("https://192.168.1.1");
+    httplib::Client cli("https://"+HOST+":"+std::to_string(PORT));
     cli.enable_server_certificate_verification(false);
 
     auto res = cli.Get("/getSID");
